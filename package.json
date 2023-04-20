@@ -17,7 +17,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "lib":"vue-cli-service build --target lib src/components/index.js --dest lib"
+    "lib":"vue-cli-service build --target lib src/packages/index.js --dest lib"
   },
   "dependencies": {
     "core-js": "^3.8.3",
