@@ -1,2 +1,3 @@
 # cvue2
-基于vue2.x和element-ui封装的快速应用组件
+    基于vue2和element-ui二次封装组件库 
+##
