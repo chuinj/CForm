@@ -9,9 +9,9 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to,form,next) => {
   next()
 })
-router.afterEach((to, from) => {
+router.afterEach(() => {
 })
 export default router
