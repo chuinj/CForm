@@ -14,7 +14,7 @@
   ],
   "main": "lib/cvue2.common.js",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "lib":"vue-cli-service build --target lib src/packages/index.js --dest lib"
