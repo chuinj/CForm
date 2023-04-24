@@ -1,6 +1,13 @@
 <template>
   <div>
-    <CForm></CForm>
+    <CForm>
+      <el-button type="text" slot="prefix">哈哈</el-button>
+      <el-button type="text" slot="suffix">哈哈</el-button>
+
+      <el-button type="text" slot="prepend">哈哈</el-button>
+      <el-button type="text" slot="append">哈哈</el-button>
+
+    </CForm>
     <formCom></formCom>
   </div>
 </template>

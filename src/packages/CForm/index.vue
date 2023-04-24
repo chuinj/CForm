@@ -27,6 +27,7 @@
               v-model="formItem[item.prop]"
               :style="formContentWidth"
               :disabled="item.disabled"
+              @input="changeRadio"
             >
               <template v-if="item.isRadioButton">
                 <el-radio-button
@@ -53,6 +54,7 @@
               v-model="formItem[item.prop]"
               :style="formContentWidth"
               :disabled="item.disabled"
+              @change="changeCheckBox"
             >
               <template v-if="item.isCheckBoxButton">
                 <el-checkbox-button
@@ -96,8 +98,63 @@
               :max="item.max"
               :min="item.min"
               :step="item.step"
+              @input="inputChange"
+              @change="changeInput"
+              @blur="inputBlur"
+              @focus="inputFocus"
             >
+              <template slot="prefix">
+                <slot name="prefix"></slot>
+              </template>
+              <template slot="suffix">
+                <slot name="suffix"></slot>
+              </template>
+              <template slot="prepend">
+                <slot name="prepend"></slot>
+              </template>
+              <template slot="append">
+                <slot name="append"></slot>
+              </template>
             </el-input>
+          </template>
+          <template v-if="item.type == 'number'">
+            <el-input-number
+              v-model="formItem[item.prop]"
+              :style="formContentWidth"
+              :min="item.min"
+              :max="item.max"
+              :step="item.step"
+              :step-strictly="item.stepStrictly"
+              :precision="item.precision"
+              :disabled="item.disabled"
+              :controls="item.controls"
+              :controls-position="item.controlsPosition"
+              :placeholder="item.placeholder"
+              @change="numberChange"
+              @blur="numberBlur"
+              @focus="numberFocus"
+            ></el-input-number>
+          </template>
+          <template v-if="item.type == 'select'">
+            <el-select
+              v-model="formItem[item.prop]"
+              :style="formContentWidth"
+              multiple
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请输入关键词"
+              :remote-method="remoteMethod"
+              :loading="loading"
+            >
+              <!-- <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option> -->
+            </el-select>
           </template>
         </template>
       </template>
@@ -168,6 +225,7 @@ export default {
         checkbox: [1, 3],
         radio: 3,
         text: "",
+        number: 0,
       },
       formOption: {
         ref: "cform",
@@ -287,6 +345,76 @@ export default {
             min: 0, //内容最小值
             step: 2, //间隔
           },
+          {
+            prop: "number",
+            name: "number",
+            rules: [
+              //校验规则
+              {
+                required: true,
+                message: "请输入活动名称", //校验提示
+                trigger: "blur",
+              },
+            ],
+            size: "", //单独组件大小
+            labelWidth: "", //单独label宽度
+            slot: false, //是否插槽。slot-name:prop
+            type: "number",
+
+            disabled: false, //禁用
+            placeholder: "请输入数字", //占位提示
+            precision: 0, //精度
+            max: 100, //内容最大值
+            min: 0, //内容最小值
+            step: 2, //间隔
+            stepStrictly: false, //是否输入跳步
+            controls: true, //控制按钮
+            controlsPosition: "right", //按钮位置
+          },
+          {
+            prop: "select",
+            name: "select",
+            rules: [
+              //校验规则
+              {
+                required: true,
+                message: "请输入活动名称", //校验提示
+                trigger: "blur",
+              },
+            ],
+            size: "", //单独组件大小
+            labelWidth: "", //单独label宽度
+            slot: false, //是否插槽。slot-name:prop
+            type: "select",
+
+            disabled: false, //禁用
+            multiple:false,//多选
+            placeholder: "请输入数字", //占位提示
+            clearable:false,//清除
+            collapseTags:false,//文本形式展示
+            multipleLimit:0,//多选限制个数
+            filterable:false,//过滤
+
+
+            options: [
+              //选择选项
+              {
+                label: "上海", //名称
+                value: 1, //key值
+                disabled: false, //禁用
+              },
+              {
+                label: "北京",
+                value: 2,
+                disabled: true,
+              },
+              {
+                label: "天津",
+                value: 3,
+                disabled: false,
+              },
+            ],
+          },
         ],
       },
     };
@@ -310,6 +438,25 @@ export default {
     // },
   },
   methods: {
+    changeRadio(val) {
+      console.log(val);
+    },
+    changeCheckBox(val) {
+      console.log(val);
+    },
+    inputChange(val) {
+      console.log(val);
+    },
+    changeInput(val) {
+      console.log(val);
+    },
+    inputBlur() {},
+    inputFocus() {},
+    numberChange(val) {
+      console.log(val);
+    },
+    numberBlur() {},
+    numberFocus() {},
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         console.log(valid);
