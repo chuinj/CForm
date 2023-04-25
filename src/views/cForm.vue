@@ -7,6 +7,7 @@
       <el-button type="text" slot="prepend">哈哈</el-button>
       <el-button type="text" slot="append">哈哈</el-button>
 
+        <el-button type="text" slot="upload">哈哈</el-button>
     </CForm>
     <formCom></formCom>
   </div>

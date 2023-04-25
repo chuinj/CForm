@@ -22,7 +22,7 @@
             <template>
                 <slot v-if="item.slot" :name="item.prop"></slot>
                 <template v-else>
-                    <template v-if="item.type == 'radio'">
+                    <template v-if="item.type === 'radio'">
                         <el-radio-group
                                 v-model="formItem[item.prop]"
                                 :style="formContentWidth"
@@ -49,7 +49,7 @@
                             </template>
                         </el-radio-group>
                     </template>
-                    <template v-if="item.type == 'checkbox'">
+                    <template v-if="item.type === 'checkbox'">
                         <el-checkbox-group
                                 v-model="formItem[item.prop]"
                                 :style="formContentWidth"
@@ -77,7 +77,7 @@
                         </el-checkbox-group>
                     </template>
                     <template
-                            v-if="!item.type || item.type == 'text' || item.type == 'textarea'"
+                            v-if="!item.type || item.type === 'text' || item.type === 'textarea'"
                     >
                         <el-input
                                 v-model="formItem[item.prop]"
@@ -117,7 +117,7 @@
                             </template>
                         </el-input>
                     </template>
-                    <template v-if="item.type == 'number'">
+                    <template v-if="item.type === 'number'">
                         <el-input-number
                                 v-model="formItem[item.prop]"
                                 :style="formContentWidth"
@@ -135,7 +135,7 @@
                                 @focus="focusNumber"
                         ></el-input-number>
                     </template>
-                    <template v-if="item.type == 'select'">
+                    <template v-if="item.type === 'select'">
                         <el-select
                                 v-model="formItem[item.prop]"
                                 :style="formContentWidth"
@@ -167,7 +167,7 @@
                             </el-option>
                         </el-select>
                     </template>
-                    <template v-if="item.type == 'cascader'">
+                    <template v-if="item.type === 'cascader'">
                         <el-cascader
                                 v-model="formItem[item.prop]"
                                 :style="formContentWidth"
@@ -190,25 +190,182 @@
 
                         </el-cascader>
                     </template>
-                    <template v-if="item.type == 'switch'">
+                    <template v-if="item.type === 'switch'">
                         <el-switch
                                 v-model="formItem[item.prop]"
                                 :disabled="item.disabled"
-                                :width="item.labelWidth"
+                                :width="item.width"
                                 :active-icon-class="item.activeIconClass"
                                 :inactive-icon-class="item.inactiveIconClass"
                                 :active-text="item.activeText"
                                 :inactive-text="item.inactiveText"
-                                :active-color="item.activeValue"
-                                :inactive-color="item.inactiveValue"
-                                :active-value="item.activeColor"
-                                :inactive-value="item.inactiveColor"
+                                :active-color="item.activeColor"
+                                :inactive-color="item.inActiveColor"
+                                :active-value="item.activeValue"
+                                :inactive-value="item.inActiveValue"
                                 :validate-event="item.validateEvent"
                                 @change="changeSwitch"
                                 @focus="focusSwitch"
 
                         >
                         </el-switch>
+                    </template>
+                    <template v-if="item.type === 'slider'">
+                        <el-slider
+                                v-model="formItem[item.prop]"
+                                :disabled="item.disabled"
+                                :min="item.min"
+                                :max="item.max"
+                                :step="item.step"
+                                :input-size="item.inputSize"
+                                :show-input="item.showInput"
+                                :show-input-controls="item.showInputControls"
+                                :show-stops="item.showStops"
+                                :show-tooltip="item.showToolTip"
+                                :range="item.range"
+                                :vertical="item.vertical"
+                                :height="item.height"
+                                :label="item.label"
+                                :marks="item.marks"
+                                :debounce="item.debounce"
+                                :tooltip-class="item.toolTipClass"
+                                :format-tooltip="formatTooltipSlider"
+                                @change="changeSlider"
+                                @input="inputSlider"
+                        >
+                        </el-slider>
+                    </template>
+                    <template v-if="item.type === 'timePicker'||item.type === 'timeSelect'">
+                        <el-time-picker
+                                v-model="formItem[item.prop]"
+                                :readonly="item.readonly"
+                                :disabled="item.disabled"
+                                :editable="item.editable"
+                                :clearable="item.clearable"
+                                :placeholder="item.placeholder"
+                                :start-placeholder="item.startPlaceholder"
+                                :end-placeholder="item.endPlaceholder"
+                                :is-range="item.isRange"
+                                :allow-control="item.allowControl"
+                                :align="item.align"
+                                :popper-class="item.popperClass"
+                                :picker-options="item.pickerOptions"
+                                :range-separator="item.rangeSeparator"
+                                :value-format="item.valueFormat"
+                                :default-value="item.defaultValue"
+                                :name="item.nativeName"
+                                :prefix-icon="item.prefixIcon"
+                                :clear-icon="item.clearIcon"
+                                @change="timePickerChange"
+                                @blur="timePickerBlur"
+                                @focus="timePickerFocus"
+                        >
+                        </el-time-picker>
+                    </template>
+                    <template v-if="item.type === 'datePicker'">
+                        <el-date-picker
+                                v-model="formItem[item.prop]"
+                                :readonly="item.readonly"
+                                :disabled="item.disabled"
+                                :editable="item.editable"
+                                :clearable="item.clearable"
+                                :placeholder="item.placeholder"
+                                :start-placeholder="item.startPlaceholder"
+                                :end-placeholder="item.endPlaceholder"
+                                :align="item.align"
+                                :type="item.datePickerType"
+                                :format="item.format"
+                                :popper-class="item.popperClass"
+                                :picker-options="item.pickerOptions"
+                                :range-separator="item.rangeSeparator"
+                                :value-format="item.valueFormat"
+                                :default-value="item.defaultValue"
+                                :default-time="item.defaultTime"
+                                :name="item.nativeName"
+                                :unlink-panels="item.unlinkPanels"
+                                :prefix-icon="item.prefixIcon"
+                                :clear-icon="item.clearIcon"
+                                :validate-event="item.validateEvent"
+                                :append-to-body="item.appendToBody"
+                                @change="datePickerChange"
+                                @blur="datePickerBlur"
+                                @focus="datePickerFocus"
+                        >
+                        </el-date-picker>
+                    </template>
+                    <template v-if="item.type === 'dateTimePicker'">
+                        <el-date-picker
+                                v-model="formItem[item.prop]"
+                                :readonly="item.readonly"
+                                :disabled="item.disabled"
+                                :editable="item.editable"
+                                :clearable="item.clearable"
+                                :placeholder="item.placeholder"
+                                :start-placeholder="item.startPlaceholder"
+                                :end-placeholder="item.endPlaceholder"
+                                :align="item.align"
+                                :type="item.dateTimePickerType"
+                                :time-arrow-control="item.timeArrowControl"
+                                :format="item.format"
+                                :popper-class="item.popperClass"
+                                :picker-options="item.pickerOptions"
+                                :range-separator="item.rangeSeparator"
+                                :value-format="item.valueFormat"
+                                :default-value="item.defaultValue"
+                                :default-time="item.defaultTime"
+                                :name="item.nativeName"
+                                :unlink-panels="item.unlinkPanels"
+                                :prefix-icon="item.prefixIcon"
+                                :clear-icon="item.clearIcon"
+                                @change="dateTimePickerChange"
+                                @blur="dateTimePickerBlur"
+                                @focus="dateTimePickerFocus"
+                        >
+                            <template slot="range-separator">
+                                <slot name="rangeSeparator"></slot>
+                            </template>
+                        </el-date-picker>
+                    </template>
+                    <template v-if="item.type === 'upload'">
+                        <el-upload
+                                :action="item.action"
+                                :headers="item.headers"
+                                :multiple="item.multiple"
+                                :data="item.data"
+                                :name="item.uploadName"
+                                :with-credentials="item.withCredentials"
+                                :show-file-list="item.showFileList"
+                                :drag="item.drag"
+                                :accept="item.accept"
+                                :list-type="item.listType"
+                                :auto-upload="item.autoUpload"
+                                :file-list="item.fileList"
+                                :disabled="item.disabled"
+                                :limit="item.limit"
+                                :on-preview="onPreviewUpload"
+                                :on-remove="onRemoveUpload"
+                                :on-success="onSuccessUpload"
+                                :on-error="onErrorUpload"
+                                :on-progress="onProgressUpload"
+                                :on-change="onChangeUpload"
+                                :before-upload="beforeUpload"
+                                :before-remove="beforeRemoveUpload"
+                                :http-request="httpRequestUpload"
+                                :on-exceed="onExceedUpload"
+                                @clearFiles="clearFilesUpload"
+                                @abort="abortUpload"
+                                @submit="submitUpload"
+                        >
+                            <template slot="trigger">
+                                <slot name="trigger"></slot>
+                            </template>
+                            <template>
+                                <slot name="upload"></slot>
+                            </template>
+                            <template slot="tip">
+                                <slot name="tip"></slot>
+                            </template>
+                        </el-upload>
                     </template>
                 </template>
             </template>
@@ -282,7 +439,11 @@ export default {
                 radio: 3,
                 text: "",
                 number: 0,
-                selecr: 1,
+                select: 1,
+                cascder: [],
+                switch: false,
+                slider: 50,
+                timePicker: '',
             },
             formOption: {
                 ref: "cform",
@@ -584,10 +745,186 @@ export default {
                         activeText: '',//打开文字描述
                         inactiveText: '',//关闭文字描述
                         activeValue: true,//打开时候的值
-                        inactiveValue: false,//关闭时候的值
+                        inActiveValue: false,//关闭时候的值
                         activeColor: '#409EFF',//打开时候的背景色
-                        inactiveColor: '#C0CCDA',//关闭时候的背景色
+                        inActiveColor: '#C0CCDA',//关闭时候的背景色
                         validateEvent: true,//状态改变触发校验
+                    },
+                    {
+                        prop: "slider",
+                        name: "slider",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请输入活动名称", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "slider",
+                        disabled: false,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        showInput: false,
+                        showInputControls: true,
+                        inputSize: 'small',
+                        showStops: false,
+                        showToolTip: true,
+                        range: false,
+                        vertical: false,
+                        height: '',
+                        label: '',
+                        marks: {},
+                        toolTipClass: '',
+                        debounce: 300
+                    },
+                    {
+                        prop: 'timePicker',
+                        name: "timePicker",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "timePicker",
+                        disabled: false,
+                        readonly: false,
+                        editable: true,
+                        clearable: true,
+                        placeholder: '请选择时间',
+                        startPlaceholder: '请选择开始时间',
+                        endPlaceholder: '请选择结束时间',
+                        idRange: false,
+                        allowControl: false,
+                        align: 'left',
+                        popperClass: '',
+                        pickerOptions: {},
+                        rangeSeparator: '-',
+                        valueFormat: '',
+                        defaultValue: '',
+                        nativeName: '',
+                        prefixIcon: 'el-icon-time',
+                        clearIcon: 'el-icon-circle-close'
+
+                    },
+                    {
+                        prop: 'datePicker',
+                        name: "datePicker",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "datePicker",
+
+                        disabled: false,
+                        readonly: false,
+                        editable: true,
+                        clearable: true,
+                        placeholder: '请选择时间',
+                        startPlaceholder: '请选择开始时间',
+                        endPlaceholder: '请选择结束时间',
+                        datePickerType: 'date',
+                        align: 'left',
+                        popperClass: '',
+                        pickerOptions: {},
+                        rangeSeparator: '-',
+                        format: '',
+                        defaultValue: null,
+                        defaultTime: '',
+                        valueFormat: '',
+                        nativeName: '',
+                        unlinkPanels: false,
+                        prefixIcon: 'el-icon-time',
+                        clearIcon: 'el-icon-circle-close',
+                        validateEvent: true,
+                        appendToBody: true,
+
+                    },
+                    {
+                        prop: 'dateTimePicker',
+                        name: "dateTimePicker",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "dateTimePicker",
+
+                        disabled: false,
+                        readonly: false,
+                        editable: true,
+                        clearable: true,
+                        placeholder: '请选择时间',
+                        startPlaceholder: '请选择开始时间',
+                        endPlaceholder: '请选择结束时间',
+                        timeArrowControl: false,
+                        dateTimePickerType: 'date',
+                        align: 'left',
+                        popperClass: '',
+                        pickerOptions: {},
+                        rangeSeparator: '-',
+                        format: '',
+                        defaultValue: null,
+                        defaultTime: '',
+                        valueFormat: '',
+                        nativeName: '',
+                        unlinkPanels: false,
+                        prefixIcon: 'el-icon-time',
+                        clearIcon: 'el-icon-circle-close',
+                    },
+                    {
+                        prop: 'upload',
+                        name: "upload",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "upload",
+
+                        disabled: false,
+                        action: '',
+                        headers: {},
+                        multiple: false,
+                        data: {},
+                        uploadName: 'file',
+                        withCredentials: false,
+                        showFileList: true,
+                        drag: false,
+                        accept: '',
+                        listType: null,
+                        autoUpload: true,
+                        fileList: [],
+                        limit: 1,
                     }
                 ],
             },
@@ -635,7 +972,7 @@ export default {
         },
         focusNumber() {
         },
-        filerMethodSelectSelect() {
+        filerMethodSelect() {
         },
         remoteMethodSelect() {
         },
@@ -666,6 +1003,56 @@ export default {
         changeSwitch() {
         },
         focusSwitch() {
+        },
+        formatTooltipSlider() {
+        },
+        changeSlider() {
+        },
+        inputSlider() {
+        },
+        timePickerChange() {
+        },
+        timePickerBlur() {
+        },
+        timePickerFocus() {
+        },
+        datePickerChange() {
+        },
+        datePickerBlur() {
+        },
+        datePickerFocus() {
+        },
+        dateTimePickerChange() {
+        },
+        dateTimePickerBlur() {
+        },
+        dateTimePickerFocus() {
+        },
+        onPreviewUpload() {
+        },
+        onRemoveUpload() {
+        },
+        onSuccessUpload() {
+        },
+        onErrorUpload() {
+        },
+        onProgressUpload() {
+        },
+        onChangeUpload() {
+        },
+        beforeUpload() {
+        },
+        beforeRemoveUpload() {
+        },
+        httpRequestUpload() {
+        },
+        onExceedUpload() {
+        },
+        clearFilesUpload() {
+        },
+        abortUpload() {
+        },
+        submitUpload() {
         },
         onSubmit(formName) {
             this.$refs[formName].validate((valid) => {
