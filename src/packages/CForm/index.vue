@@ -99,21 +99,23 @@
                                 :min="item.min"
                                 :step="item.step"
                                 @input="inputInput"
-                                @change="changeInput"
-                                @blur="blurInput"
-                                @focus="focusInput"
+                                @change="inputChange"
+                                @blur="inputBlur"
+                                @focus="inputFocus"
+                                @clear="inputClear"
+                                @select="inputSelect"
                         >
                             <template slot="prefix">
-                                <slot name="prefix"></slot>
+                                <slot name="inputPrefix"></slot>
                             </template>
                             <template slot="suffix">
-                                <slot name="suffix"></slot>
+                                <slot name="inputSuffix"></slot>
                             </template>
                             <template slot="prepend">
-                                <slot name="prepend"></slot>
+                                <slot name="inputPrepend"></slot>
                             </template>
                             <template slot="append">
-                                <slot name="append"></slot>
+                                <slot name="inputAppend"></slot>
                             </template>
                         </el-input>
                     </template>
@@ -130,9 +132,12 @@
                                 :controls="item.controls"
                                 :controls-position="item.controlsPosition"
                                 :placeholder="item.placeholder"
-                                @change="changeNumber"
-                                @blur="blurNumber"
-                                @focus="focusNumber"
+                                :name="item.nativeName"
+                                :label="item.label"
+                                @change="numberChange"
+                                @blur="numberBlur"
+                                @focus="numberFocus"
+                                @select="numberSelect"
                         ></el-input-number>
                     </template>
                     <template v-if="item.type === 'select'">
@@ -149,14 +154,24 @@
                                 :remote="item.remote"
                                 :allow-create="item.allowCreate"
                                 :loading="item.loading"
-                                @filter-method="filerMethodSelect"
-                                @remote-method="remoteMethodSelect"
-                                @change="changeSelect"
-                                @remove-tag="removeTagSelect"
-                                @clear="clearSelect"
-                                @blur="blurSelect"
-                                @focus="focusSelect"
-                                @visible-change="visibleChangeSelect"
+                                :value-key="item.valueKey"
+                                :name="item.nativeName"
+                                :loading-text="item.loadingText"
+                                :no-match-text="item.noMatchText"
+                                :no-data-text="item.noDataText"
+                                :popper-class="item.popperClass"
+                                :reserve-keyword="item.reserveKeyword"
+                                :default-first-option="item.defaultFirstOption"
+                                :popper-append-to-body="item.popperAppendToBody"
+                                :automatic-dropdown="item.automaticDropdown"
+                                @filter-method="selectFilerMethod"
+                                @remote-method="selectRemoteMethod"
+                                @change="selectChange"
+                                @remove-tag="selectRemoveTag"
+                                @clear="selectClear"
+                                @blur="selectBlur"
+                                @focus="selectFocus"
+                                @visible-change="selectVisibleChange"
                         >
                             <el-option
                                     v-for="(m,n) in item.options"
@@ -165,6 +180,15 @@
                                     :value="m.value"
                             >
                             </el-option>
+                            <template slot="default">
+                                <slot name="select"></slot>
+                            </template>
+                            <template slot="prefix">
+                                <slot name="selectPrefix"></slot>
+                            </template>
+                            <template slot="empty">
+                                <slot name="selectEmpty"></slot>
+                            </template>
                         </el-select>
                     </template>
                     <template v-if="item.type === 'cascader'">
@@ -180,14 +204,24 @@
                                 :collapse-tags="item.collapseTags"
                                 :separator="item.separator"
                                 :filterable="item.filterable"
-                                @change="changeCascader"
-                                @expand-change="expandChangeCascader"
-                                @blur="blurCascader"
-                                @focus="focusCascader"
-                                @visible-change="visibleChangeCascable"
-                                @remove-tags="removeTagSelectsCascable"
+                                :popper-class="item.popperClass"
+                                :debounce="item.debounce"
+                                :filter-method="cascaderFilterMethod"
+                                :before-filter="cascaderBeforeFilter"
+                                @change="cascaderChange"
+                                @expand-change="cascaderExpandChange"
+                                @blur="cascaserBlur"
+                                @focus="cascaderFocus"
+                                @visible-change="cascaderVisibleChange"
+                                @remove-tags="cascaderRemoveTags"
+                                @getCheckedNodes="cascaderGetCheckedNodes"
                         >
-
+                            <template slot="default" scope="scope">
+                                <slot name="cascader" :scope="scope"></slot>
+                            </template>
+                            <template slot="empty">
+                                <slot name="cascaderEmpty"></slot>
+                            </template>
                         </el-cascader>
                     </template>
                     <template v-if="item.type === 'switch'">
@@ -204,9 +238,9 @@
                                 :active-value="item.activeValue"
                                 :inactive-value="item.inActiveValue"
                                 :validate-event="item.validateEvent"
-                                @change="changeSwitch"
-                                @focus="focusSwitch"
-
+                                :name="item.nativeName"
+                                @change="switchChange"
+                                @focus="switchFocus"
                         >
                         </el-switch>
                     </template>
@@ -229,9 +263,9 @@
                                 :marks="item.marks"
                                 :debounce="item.debounce"
                                 :tooltip-class="item.toolTipClass"
-                                :format-tooltip="formatTooltipSlider"
-                                @change="changeSlider"
-                                @input="inputSlider"
+                                :format-tooltip="silderFormatTooltip"
+                                @change="silderChange"
+                                @input="sliderInput"
                         >
                         </el-slider>
                     </template>
@@ -322,7 +356,7 @@
                                 @focus="dateTimePickerFocus"
                         >
                             <template slot="range-separator">
-                                <slot name="rangeSeparator"></slot>
+                                <slot name="uploadRangeSeparator"></slot>
                             </template>
                         </el-date-picker>
                     </template>
@@ -342,30 +376,91 @@
                                 :file-list="item.fileList"
                                 :disabled="item.disabled"
                                 :limit="item.limit"
-                                :on-preview="onPreviewUpload"
-                                :on-remove="onRemoveUpload"
-                                :on-success="onSuccessUpload"
-                                :on-error="onErrorUpload"
-                                :on-progress="onProgressUpload"
-                                :on-change="onChangeUpload"
-                                :before-upload="beforeUpload"
-                                :before-remove="beforeRemoveUpload"
-                                :http-request="httpRequestUpload"
-                                :on-exceed="onExceedUpload"
-                                @clearFiles="clearFilesUpload"
-                                @abort="abortUpload"
-                                @submit="submitUpload"
+                                :on-preview="uploadOnPreview"
+                                :on-remove="uploadOnRemove"
+                                :on-success="uploadOnSuccess"
+                                :on-error="uploadOnError"
+                                :on-progress="uploadOnProgress"
+                                :on-change="uploadOnChange"
+                                :before-upload="uploadBeforeUpload"
+                                :before-remove="uploadBeforeRemove"
+                                :http-request="uploadHttpRequest"
+                                :on-exceed="uploadOnExceed"
+                                @clearFiles="uploadClearFiles"
+                                @abort="uploadAbort"
+                                @submit="uploadSubmit"
                         >
                             <template slot="trigger">
-                                <slot name="trigger"></slot>
+                                <slot name="uploadTrigger"></slot>
                             </template>
                             <template>
                                 <slot name="upload"></slot>
                             </template>
                             <template slot="tip">
-                                <slot name="tip"></slot>
+                                <slot name="uploadTip"></slot>
                             </template>
                         </el-upload>
+                    </template>
+                    <template v-if="item.type === 'rate'">
+                        <el-rate
+                                v-model="formItem[item.prop]"
+                                :max="item.max"
+                                :disabled="item.disabled"
+                                :allow-half="item.allowHalf"
+                                :low-threshold="item.lowThreshold"
+                                :high-threshold="item.highThreshold"
+                                :colors="item.colors"
+                                :void-color="item.voidColor"
+                                :disabled-void-color="item.disabledVoidColor"
+                                :icon-classes="item.iconClasses"
+                                :void-icon-class="item.voidIconClass"
+                                :show-text="item.showText"
+                                :show-score="item.showScore"
+                                :text-color="item.textColor"
+                                :texts="item.texts"
+                                :score-template="item.scoreTemplate"
+                                @change="rateChange"
+                        >
+                        </el-rate>
+                    </template>
+                    <template v-if="item.type === 'colorPicker'">
+                        <el-color-picker
+                                v-model="formItem[item.prop]"
+                                :show-alpha="item.showAlpha"
+                                :color-format="item.colorFormat"
+                                :popper-class="item.popperClass"
+                                :predefine="item.predefine"
+                                @change="colorPickerChange"
+                                @active-change="colorPickerActiveChange"
+                        ></el-color-picker>
+                    </template>
+                    <template v-if="item.type === 'transfer'">
+                        <el-transfer
+                                v-model="formItem[item.prop]"
+                                :data="item.data"
+                                :filterable="item.filterable"
+                                :filter-placeholder="item.filterPlaceholder"
+                                :filterMethod="transferFilterMethod"
+                                :target-order="item.targetOrder"
+                                :titles="item.titles"
+                                :button-texts="item.buttonTexts"
+                                :renderContent="transferRenderContent"
+                                :format="item.format"
+                                :props="item.props"
+                                :left-default-checked="item.leftDefaultChecked"
+                                :right-default-checked="item.rightDefaultChecked"
+                                @change="transferChange"
+                                @left-check-change="transferLeftCheckChange"
+                                @right-check-change="transferRightCheckChange"
+                        >
+                            <template slot="left-footer">
+                                <slot name="transferLeftFooter"></slot>
+                            </template>
+                            <template slot="right-footer">
+                                <slot name="transferRightFooter"></slot>
+                            </template>
+                        </el-transfer>
+
                     </template>
                 </template>
             </template>
@@ -444,6 +539,9 @@ export default {
                 switch: false,
                 slider: 50,
                 timePicker: '',
+                datePicker: '',
+                dateTimePicker: '',
+                rate: ''
             },
             formOption: {
                 ref: "cform",
@@ -588,6 +686,8 @@ export default {
                         stepStrictly: false, //是否输入跳步
                         controls: true, //控制按钮
                         controlsPosition: "right", //按钮位置
+                        nativeName:'',
+                        label:'',
                     },
                     {
                         prop: "select",
@@ -615,6 +715,17 @@ export default {
                         allowCreate: false,//允许创建
                         remote: false,//远程搜索
                         loading: false,//远程搜索中
+                        valueKey:'value',
+                        nativeName:'',
+                        autoComplete:'off',
+                        loadingText:'加载中',
+                        noMatchText:'无匹配数据',
+                        noDataText:'无数据',
+                        popperClass: '',
+                        reserveKeyword:false,
+                        defaultFirstOption:false,
+                        popperAppendToBody:true,
+                        automaticDropdown:false,
                         options: [
                             //选择选项
                             {
@@ -650,13 +761,14 @@ export default {
                         slot: false, //是否插槽。slot-name:prop
                         type: "cascader",
                         placeholder: '请选择',//占位符
-
+                        disabled:false,
                         clearable: false,//清空
                         showAllLevels: true,//显示完整路径
                         collapseTags: false,//折叠tag
                         separator: '/',//选项分隔符
                         filterable: false,//搜索
-
+                        debounce:300,
+                        popperClass:'',
                         props: {
                             multiple: false,//多选
                             expandTrigger: 'click',//次级菜单展开方式
@@ -748,6 +860,7 @@ export default {
                         inActiveValue: false,//关闭时候的值
                         activeColor: '#409EFF',//打开时候的背景色
                         inActiveColor: '#C0CCDA',//关闭时候的背景色
+                        nativeName:'',
                         validateEvent: true,//状态改变触发校验
                     },
                     {
@@ -845,7 +958,7 @@ export default {
                         popperClass: '',
                         pickerOptions: {},
                         rangeSeparator: '-',
-                        format: '',
+                        format: 'yyyy-MM-dd',
                         defaultValue: null,
                         defaultTime: '',
                         valueFormat: '',
@@ -886,7 +999,7 @@ export default {
                         popperClass: '',
                         pickerOptions: {},
                         rangeSeparator: '-',
-                        format: '',
+                        format: 'yyyy-MM-dd HH:mm:ss',
                         defaultValue: null,
                         defaultTime: '',
                         valueFormat: '',
@@ -915,17 +1028,96 @@ export default {
                         action: '',
                         headers: {},
                         multiple: false,
-                        data: {},
+                        data: null,
                         uploadName: 'file',
                         withCredentials: false,
                         showFileList: true,
                         drag: false,
                         accept: '',
-                        listType: null,
+                        listType: 'text',
                         autoUpload: true,
                         fileList: [],
-                        limit: 1,
-                    }
+                        limit: null,
+                    },
+                    {
+                        prop: 'rate',
+                        name: "rate",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "rate",
+                        max: 5,
+                        disabled: false,
+                        allowHalf: false,
+                        lowThreshold: 2,
+                        highThreshold: 4,
+                        colors: ['#F7BA2A', '#F7BA2A', '#F7BA2A'],
+                        voidColor: '#C6D1DE',
+                        disabledVoidColor: '#EFF2F7',
+                        iconClasses: ['el-icon-star-on', 'el-icon-star-on', 'el-icon-star-on'],
+                        voidIconClass: 'el-icon-star-off',
+                        disabledVoidIconClass: 'el-icon-star-on',
+                        showText: false,
+                        showScore: false,
+                        textColor: '#1F2D3D',
+                        texts: ['极差', '失望', '一般', '满意', '惊喜'],
+                        scoreTemplate: '{value}',
+                    },
+                    {
+                        prop: 'colorPicker',
+                        name: "colorPicker",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "colorPicker",
+                        disabled: false,
+                        showAlpha: false,
+                        colorFormat: null,
+                        popperClass: '',
+                        predefine: null,
+                    },
+                    {
+                        prop: 'transfer',
+                        name: "transfer",
+                        rules: [
+                            //校验规则
+                            {
+                                required: true,
+                                message: "请选择时间", //校验提示
+                                trigger: "blur",
+                            },
+                        ],
+                        size: "", //单独组件大小
+                        labelWidth: "", //单独label宽度
+                        slot: false, //是否插槽。slot-name:prop
+                        type: "transfer",
+                        data: [],
+                        filterable: false,
+                        filterPlaceholder: '请输入搜索内容',
+                        targetOrder: 'original',
+                        titles: ['列表 1', '列表 2'],
+                        buttonTexts: [],
+                        format: {},
+                        props: null,
+                        leftDefaultChecked: [],
+                        rightDefaultChecked: [],
+                    },
                 ],
             },
         };
@@ -958,57 +1150,63 @@ export default {
         inputInput(val) {
             console.log(val);
         },
-        changeInput(val) {
+        inputChange(val) {
             console.log(val);
         },
-        blurInput() {
+        inputBlur() {
         },
-        focusInput() {
+        inputFocus() {
         },
-        changeNumber(val) {
+        inputClear(){},
+        inputSelect(){},
+        numberChange(val) {
             console.log(val);
         },
-        blurNumber() {
+        numberBlur() {
         },
-        focusNumber() {
+        numberFocus() {
         },
-        filerMethodSelect() {
+        numberSelect(){},
+        selectFilerMethod() {
         },
-        remoteMethodSelect() {
+        selectRemoteMethod() {
         },
-        clearSelect() {
+        selectClear() {
         },
-        changeSelect() {
+        selectChange() {
         },
-        removeTagSelect() {
+        selectRemoveTag() {
         },
-        blurSelect() {
+        selectBlur() {
         },
-        focusSelect() {
+        selectFocus() {
         },
-        visibleChangeSelect() {
+        selectVisibleChange() {
         },
-        changeCascader() {
+        cascaderChange() {
         },
-        expandChangeCascader() {
+        cascaderExpandChange() {
         },
-        blurCascader() {
+        cascaserBlur() {
         },
-        focusCascader() {
+        cascaderFocus() {
         },
-        visibleChangeCascable() {
+        cascaderVisibleChange() {
         },
-        removeTagSelectsCascable() {
+        cascaderRemoveTags() {
         },
-        changeSwitch() {
+        cascaderGetCheckedNodes(){},
+        cascaderFilterMethod(){},
+        cascaderBeforeFilter(){},
+        switchChange() {
         },
-        focusSwitch() {
+        switchFocus() {
         },
-        formatTooltipSlider() {
+        silderFormatTooltip() {
         },
-        changeSlider() {
+        silderChange() {
         },
-        inputSlider() {
+        sliderInput() {
         },
         timePickerChange() {
         },
@@ -1028,31 +1226,47 @@ export default {
         },
         dateTimePickerFocus() {
         },
-        onPreviewUpload() {
+        uploadOnPreview() {
         },
-        onRemoveUpload() {
+        uploadOnRemove() {
         },
-        onSuccessUpload() {
+        uploadOnSuccess() {
         },
-        onErrorUpload() {
+        uploadOnError() {
         },
-        onProgressUpload() {
+        uploadOnProgress() {
         },
-        onChangeUpload() {
+        uploadOnChange() {
         },
-        beforeUpload() {
+        uploadBeforeUpload() {
         },
-        beforeRemoveUpload() {
+        uploadBeforeRemove() {
         },
-        httpRequestUpload() {
+        uploadHttpRequest() {
         },
-        onExceedUpload() {
+        uploadOnExceed() {
         },
-        clearFilesUpload() {
+        uploadClearFiles() {
         },
-        abortUpload() {
+        uploadAbort() {
         },
-        submitUpload() {
+        uploadSubmit() {
+        },
+        rateChange() {
+        },
+        colorPickerChange() {
+        },
+        colorPickerActiveChange() {
+        },
+        transferFilterMethod() {
+        },
+        transferRenderContent() {
+        },
+        transferChange() {
+        },
+        transferLeftCheckChange() {
+        },
+        transferRightCheckChange() {
         },
         onSubmit(formName) {
             this.$refs[formName].validate((valid) => {
